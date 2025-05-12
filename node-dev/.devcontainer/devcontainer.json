@@ -1,0 +1,60 @@
+{
+  "name": "Node.js Development",
+  "dockerComposeFile": "../docker-compose.devcontainer.yml",
+  "service": "node_dev",
+  "workspaceFolder": "/home/node-dev",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+          // UI 主題 (與 WordPress 環境保持一致)
+          "PKief.material-icon-theme",
+          "PKief.material-product-icons",
+          "zhuangtongfa.material-theme",
+          // 必要插件
+          "dbaeumer.vscode-eslint", // ESLint 支援
+          "esbenp.prettier-vscode", // Prettier 格式化
+          "christian-kohler.npm-intellisense", // npm 模組補全
+          "christian-kohler.path-intellisense", // 路徑補全
+          "ms-vscode.js-debug", // JavaScript/Node.js 調試
+          "firsttris.vscode-jest-runner", // Jest 測試支援
+          // 推薦插件
+          "ms-vscode.vscode-typescript-next", // 最新 TypeScript 支援
+          "wix.vscode-import-cost", // 模組大小顯示
+          "eamodio.gitlens", // Git 增強
+          "ms-azuretools.vscode-docker", // Docker 支援
+          // 其它插件
+          "psioniq.psi-header",
+          "bierner.markdown-mermaid",
+          "shd101wyy.markdown-preview-enhanced",
+          "mikestead.dotenv",
+          "humao.rest-client",
+          "ritwickdey.LiveServer",
+          // AI 插件
+          "GitHub.copilot",
+          "GitHub.copilot-chat",
+          "MonicaIM.monica-code"
+        ],
+        "settings": {
+          "git.path": "/usr/bin/git",
+          "git.enabled": true,
+          "git.ignoreMissingGitWarning": true,
+          "terminal.integrated.defaultProfile.linux": "bash",
+          "editor.formatOnSave": true,
+          "editor.defaultFormatter": "esbenp.prettier-vscode",
+          "eslint.validate": [
+            "javascript",
+            "javascriptreact",
+            "typescript",
+            "typescriptreact"
+          ],
+          "npm.scriptExplorer.enable": true
+        }
+    }
+  },
+  "postCreateCommand": "bash /home/node-dev/.devcontainer/post-create.sh",
+  "postStartCommand": "bash /home/node-dev/.devcontainer/post-start.sh",
+  "forwardPorts": [3000],
+  "remoteUser": "node",
+  // 將容器內的用戶 UID/GID 與主機用戶對應，避免權限問題
+  "updateRemoteUserUID": true
+}

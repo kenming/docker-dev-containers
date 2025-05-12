@@ -1,0 +1,21 @@
+services:
+  node_dev:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ${CONTAINER_NAME:-dev-node}
+    working_dir: /home/node-dev
+    command: sleep infinity
+    volumes:
+      - ${HOST_WWW_DIR:-~/docker-vols/sites/devwp}:/var/www/html
+      - ${HOST_DEV_DIR:-~/docker/node-dev}:/home/node-dev
+      - ${HOST_PROJECTS_DIR:-~/projects}:/home/projects
+    ports:
+      - "${NODE_PORT:-3000}:3000"
+    networks:
+      - nginx-proxy-network
+
+networks:
+  nginx-proxy-network:
+    external: true
+    name: ${NETWORK_NAME:-nginx-proxy}

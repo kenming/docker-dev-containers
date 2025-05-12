@@ -1,0 +1,67 @@
+{
+  "name": "WordPress Development",
+
+  "dockerComposeFile": "../docker-compose.devcontainer.yml",
+  "service": "wordpress_devwp",
+
+  // 設定主要工作目錄
+  "workspaceFolder": "/home/devwp",
+
+  // 在容器中安裝的 VSCode 擴充功能
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "PKief.material-icon-theme",
+        "PKief.material-product-icons",
+        "zhuangtongfa.material-theme",
+        "bmewburn.vscode-intelephense-client",
+        "felixfbecker.php-debug",
+        "xdebug.php-debug",
+        "wordpresstoolbox.wordpress-toolbox",
+        "ms-azuretools.vscode-docker",
+        "psioniq.psi-header",
+        "neilbrayfield.php-docblocker",
+        "eamodio.gitlens",        
+        "codezombiech.gitignore",        
+        "bierner.markdown-mermaid",
+        "shd101wyy.markdown-preview-enhanced",
+        // AI 插件
+        "GitHub.copilot",
+        "GitHub.copilot-chat",
+        "MonicaIM.monica-code"
+      ],
+      "settings": {
+        "git.path": "/usr/bin/git",  // 或容器中 git 的實際路徑
+        "git.enabled": true,
+        "git.ignoreMissingGitWarning": true, // 忽略 Git 缺失警告        
+        "terminal.integrated.defaultProfile.linux": "bash",
+        "php.validate.executablePath": "/usr/local/bin/php",
+        "intelephense.environment.includePaths": [
+          "/var/www/html",
+          "/var/www/html/wp-content"
+        ],
+        "terminal.integrated.env.linux": {
+          "PATH": "/usr/local/bin:${env:PATH}"
+        }
+      }
+    }
+  },
+
+  // 修改順序：先安裝 Git，再執行其他腳本
+  "initializeCommand": "echo 'Initializing development container...'",  
+  "postCreateCommand": "bash /home/devwp/.devcontainer/post-create.sh && bash /home/devwp/.devcontainer/install-xdebug.sh",
+  "postStartCommand": "bash /home/devwp/.devcontainer/post-start.sh",
+
+  // 轉發容器內的端口到主機（如果需要）
+  "forwardPorts": [],  // 添加 Wordpress、MySQL 和 Adminer 端口
+
+  // 在容器啟動後保持運行
+  "shutdownAction": "none",
+
+  "remoteUser": "vscode",
+  // 將容器內的用戶 UID/GID 與主機用戶對應，避免權限問題
+  "updateRemoteUserUID": true
+
+  // 確保啟動所有服務
+  //"runServices": ["mysql_devwp", "wp_devwp"]
+}

@@ -1,0 +1,50 @@
+# 環境變數文件 - 排除所有實際的 .env 文件
+**/.env
+**/.env.bak
+/env-configs/
+
+# 我們不排除 env-configs 目錄，因為它是一個子模組
+# 子模組目錄本身會被 Git 特殊處理，只存儲引用而非內容
+
+# 資料庫和數據目錄
+**/db_data/
+
+# WordPress 上傳的媒體文件
+**/wp-content/uploads/
+
+# 日誌文件
+**/*.log
+
+# 備份文件
+**/*.bak
+**/*.backup
+**/*.sql
+**/*.sql.gz
+**/ai1wm-backups/
+
+# 系統文件
+.DS_Store
+Thumbs.db
+
+# 編輯器和 IDE 文件
+**/.idea/
+**/.vscode/
+**/*.swp
+**/*.swo
+
+# 暫存文件
+**/tmp/
+**/temp/
+**/cache/
+
+# Node.js 相關
+**/node_modules/
+**/npm-debug.log*
+**/yarn-debug.log*
+**/yarn-error.log*
+
+# 編譯文件
+**/*.class
+**/*.o
+**/*.pyc
+**/*.so

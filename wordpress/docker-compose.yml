@@ -1,0 +1,73 @@
+services:
+  mysql_server:
+    image: mysql:${MYSQL_VERSION:-5.7.44}
+    container_name: ${MYSQL_CONTAINER_NAME:-wordpress_db}
+    restart: always
+    volumes:
+      - ${MYSQL_DATA_DIR:-~/docker-vols/db_data/mysql}:/var/lib/mysql
+    environment:      
+      - MYSQL_DATABASE=${MYSQL_DATABASE:-wp_blog}
+      - MYSQL_USER=${MYSQL_USER:-wpuser}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD:-wppasswd}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD:-dbpasswd}
+  
+  phpmyadmin:
+    image: phpmyadmin:${PMA_VERSION:-5.2.1}
+    container_name: ${PMA_CONTAINER_NAME:-phpmyadmin}
+    links:
+      - mysql_server
+    restart: always
+    environment:
+      - VIRTUAL_HOST=${PMA_VIRTUAL_HOST:-phpmyadmin.localhost}
+      - PMA_HOST=mysql_server
+      - PMA_PORT=3306
+      - MYSQL_USERNAME=root
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD:-dbpasswd}
+      - UPLOAD_LIMIT=${PMA_UPLOAD_LIMIT:-500M}
+    #volumes: 
+    #  - ./phpmyadmin/phpmyadmin-misc.ini:/usr/local/etc/php/conf.d/phpmyadmin-misc.ini
+    depends_on:
+      - mysql_server
+    expose:
+      - 80
+
+  wordprss_blog:
+    image: wordpress:${WP_BLOG_VERSION:-php8.3}
+    container_name: ${WP_BLOG_CONTAINER_NAME:-wordpress_blog}
+    restart: always
+    environment:
+      - VIRTUAL_HOST=${WP_BLOG_VIRTUAL_HOST:-blog.localhost}
+      - WORDPRESS_DB_NAME=${WP_BLOG_DB_NAME:-wp_blog}
+      - WORDPRESS_DB_HOST=mysql_server:3306
+      - WORDPRESS_DB_USER=${MYSQL_USER:-wpuser}
+      - WORDPRESS_DB_PASSWORD=${MYSQL_PASSWORD:-wppasswd}
+      - WORDPRESS_DEBUG=${WP_BLOG_DEBUG:-false}
+    volumes:
+      - ${WP_BLOG_DIR:-~/docker-vols/sites/blog}:/var/www/html
+    depends_on:
+      - mysql_server
+    expose:
+      - 80
+
+  wordprss_kenming:
+    image: wordpress:${WP_KENMING_VERSION:-php8.3}
+    container_name: ${WP_KENMING_CONTAINER_NAME:-wordpress_kenming}
+    restart: always
+    environment:
+      - VIRTUAL_HOST=${WP_KENMING_VIRTUAL_HOST:-kenming.localhost}
+      - WORDPRESS_DB_NAME=${WP_KENMING_DB_NAME:-wp_kenming}
+      - WORDPRESS_DB_HOST=mysql_server:3306
+      - WORDPRESS_DB_USER=${MYSQL_USER:-wpuser}
+      - WORDPRESS_DB_PASSWORD=${MYSQL_PASSWORD:-wppasswd}
+      - WORDPRESS_DEBUG=${WP_KENMING_DEBUG:-false}
+    volumes:
+      - ${WP_KENMING_DIR:-~/docker-vols/sites/kenming}:/var/www/html
+    depends_on:
+      - mysql_server
+    expose:
+      - 80
+
+networks:
+  default:
+    external: true
+    name: ${NETWORK_NAME:-nginx-proxy}

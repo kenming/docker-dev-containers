@@ -1,0 +1,39 @@
+services:
+  # SQL Server 服務
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest  # 使用最新的 SQL Server 2022
+    # 如果需要較輕量的版本，可以使用 2019-latest 或其他版本
+    container_name: sqlserver-dev
+    environment:
+      - ACCEPT_EULA=${ACCEPT_EULA}
+      - MSSQL_SA_PASSWORD=${MSSQL_SA_PASSWORD}  # 從 .env 文件讀取密碼
+      - MSSQL_PID=${MSSQL_PID}  # 從 .env 文件讀取版本
+    ports:
+      - "${SQL_PORT}:1433"  # 將容器的 SQL Server 連接埠映射到主機
+    volumes:
+      - sqlserver-data:/var/opt/mssql  # 使用命名卷
+      # - ~/docker-vols/mssql:/var/opt/mssql  # 持久化資料
+      # - ./init-scripts:/docker-entrypoint-initdb.d  # 初始化腳本（可選）
+
+  # 可選：加入 Adminer 或其他資料庫管理工具
+  adminer:
+    image: adminer:latest
+    container_name: adminer-sql
+    ports:
+      - "${ADMINER_PORT}:8080"    
+    environment:
+      # - VIRTUAL_HOST= sqlexpress.localhost
+      - ADMINER_DEFAULT_SERVER=${ADMINER_DEFAULT_SERVER}
+      - ADMINER_DESIGN=${ADMINER_DESIGN}
+      - ADMINER_DEFAULT_USER=${ADMINER_DEFAULT_USER}
+      - ADMINER_DEFAULT_PASSWORD=${ADMINER_DEFAULT_PASSWORD}
+    depends_on:
+      - sqlserver
+
+volumes:
+  sqlserver-data:
+
+networks:
+  default:
+    external: true
+    name: nginx-proxy

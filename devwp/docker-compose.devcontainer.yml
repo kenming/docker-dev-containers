@@ -1,0 +1,54 @@
+services:
+  mysql_devwp:
+    image: mysql:5.7.44
+    container_name: devwp_mysql
+    restart: always
+    volumes:
+      - mysql_data:/var/lib/mysql
+    environment:      
+      - MYSQL_DATABASE=wp_devwp
+      - MYSQL_USER=wpuser
+      - MYSQL_PASSWORD=wppasswd
+      - MYSQL_ROOT_PASSWORD=dbpasswd
+
+  wordpress_devwp:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: devwp_wordpress    
+    restart: always  
+    environment:
+        - VIRTUAL_HOST=devwp.localhost        
+        - WORDPRESS_DEBUG='true'
+        - WORDPRESS_DB_NAME=wp_devwp
+        - WORDPRESS_DB_HOST=mysql_devwp:3306
+        - WORDPRESS_DB_USER=wpuser
+        - WORDPRESS_DB_PASSWORD=wppasswd
+    working_dir:  /var/www/html
+    volumes:
+        - ~/docker/devwp:/home/devwp
+        - ~/docker-vols/sites/devwp:/var/www/html        
+        - ~/projects:/home/projects
+    depends_on:
+        - mysql_devwp
+    expose:
+        - 80
+
+  adminer_devwp:
+    image: adminer:latest
+    container_name: devwp_adminer
+    restart: always
+    environment:
+      - VIRTUAL_HOST=adminer.devwp.localhost
+    depends_on:
+      - mysql_devwp
+    expose:
+      - 8080  
+
+volumes:
+  mysql_data:
+
+networks:
+  default:
+    external: true
+    name: nginx-proxy
