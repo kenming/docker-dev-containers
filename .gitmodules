@@ -1,0 +1,3 @@
+[submodule "env-configs"]
+	path = env-configs
+	url = https://github.com/kenming/docker-env-configs
