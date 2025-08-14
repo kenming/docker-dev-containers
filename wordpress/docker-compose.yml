@@ -8,8 +8,8 @@ services:
     environment:      
       - MYSQL_DATABASE=${MYSQL_DATABASE:-wp_blog}
       - MYSQL_USER=${MYSQL_USER:-wpuser}
-      - MYSQL_PASSWORD=${MYSQL_PASSWORD:-wppasswd}
-      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD:-dbpasswd}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
   
   phpmyadmin:
     image: phpmyadmin:${PMA_VERSION:-5.2.1}
@@ -22,7 +22,7 @@ services:
       - PMA_HOST=mysql_server
       - PMA_PORT=3306
       - MYSQL_USERNAME=root
-      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD:-dbpasswd}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
       - UPLOAD_LIMIT=${PMA_UPLOAD_LIMIT:-500M}
     #volumes: 
     #  - ./phpmyadmin/phpmyadmin-misc.ini:/usr/local/etc/php/conf.d/phpmyadmin-misc.ini
@@ -40,7 +40,7 @@ services:
       - WORDPRESS_DB_NAME=${WP_BLOG_DB_NAME:-wp_blog}
       - WORDPRESS_DB_HOST=mysql_server:3306
       - WORDPRESS_DB_USER=${MYSQL_USER:-wpuser}
-      - WORDPRESS_DB_PASSWORD=${MYSQL_PASSWORD:-wppasswd}
+      - WORDPRESS_DB_PASSWORD=${MYSQL_PASSWORD}
       - WORDPRESS_DEBUG=${WP_BLOG_DEBUG:-false}
     volumes:
       - ${WP_BLOG_DIR:-~/docker-vols/sites/blog}:/var/www/html
@@ -58,7 +58,7 @@ services:
       - WORDPRESS_DB_NAME=${WP_KENMING_DB_NAME:-wp_kenming}
       - WORDPRESS_DB_HOST=mysql_server:3306
       - WORDPRESS_DB_USER=${MYSQL_USER:-wpuser}
-      - WORDPRESS_DB_PASSWORD=${MYSQL_PASSWORD:-wppasswd}
+      - WORDPRESS_DB_PASSWORD=${MYSQL_PASSWORD}
       - WORDPRESS_DEBUG=${WP_KENMING_DEBUG:-false}
     volumes:
       - ${WP_KENMING_DIR:-~/docker-vols/sites/kenming}:/var/www/html

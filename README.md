@@ -35,6 +35,13 @@
   - 已配置 Xdebug 支持
   - [查看詳細說明](devwp/README.md)
 
+- [`gemini-balance/`](gemini-balance/README.md): Google Gemini API 代理服務
+  - 提供 Google Gemini API 的代理和負載平衡
+  - 支援多種 Gemini 模型（包括 gemini-2.5-pro, gemini-2.5-flash 等）
+  - 內建 MySQL 資料庫用於使用者和使用量管理
+  - 與 nginx-proxy 整合，實現虛擬主機路由
+  - [查看詳細說明](gemini-balance/README.md)
+
 ## 環境配置
 
 本專案使用 Git 子模組來管理環境配置文件（.env），以確保敏感信息不會被提交到公開儲存庫中。

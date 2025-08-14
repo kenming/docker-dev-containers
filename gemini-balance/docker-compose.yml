@@ -1,0 +1,51 @@
+volumes:
+  mysql_data:
+
+services:
+  gemini-balance:
+    image: ghcr.io/snailyp/gemini-balance:latest
+    container_name: gemini-balance
+    restart: unless-stopped
+    ports:
+      - "${PORT:-8000}:8000"
+    env_file:
+      - .env
+    depends_on:
+      mysql:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import requests; exit(0) if requests.get('http://localhost:8000/health').status_code == 200 else exit(1)\""]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    volumes:
+      - ~/docker-vols/gemini_balance/logs:/app/logs
+      - ~/docker-vols/gemini_balance/data:/app/data
+    expose:
+      - 8000
+
+  mysql:
+    image: mysql:8
+    container_name: ${MYSQL_HOST:-gemini-balance-db}
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-gemini_balance}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    ports:
+      - "${MYSQL_EXTERNAL_PORT:-3308}:3306"
+    volumes:
+      - ${MYSQL_DATA_DIR:-~/docker-vols/db_data/gemini_balance}:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+networks:
+  default:
+    external: true
+    name: ${NETWORK_NAME:-nginx-proxy}
