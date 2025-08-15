@@ -1,6 +1,3 @@
-以下是使用繁體中文用語修改後的 README.md 文件：
-
-```markdown:gemini-balance/README.md
 # Gemini Balance Docker 環境
 
 這個目錄包含用於部署 Gemini Balance 的 Docker 配置，提供 Google Gemini API 的代理服務，支援多種模型、串流輸出、使用者管理和使用量控制。
