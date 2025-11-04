@@ -11,13 +11,13 @@ services:
       - ${NGINX_CONF_DIR:-~/docker-vols/nginx/conf.d/}:/etc/nginx/conf.d
       - vhost:/etc/nginx/vhost.d
       - html:/usr/share/nginx/html      
-      - certs:/etc/nginx/certs:ro
+      # - certs:/etc/nginx/certs:ro
+      - ~/docker-vols/nginx/certs:/etc/nginx/certs:ro
       - /var/run/docker.sock:/tmp/docker.sock:ro
 
 volumes:  
   vhost:
   html:
-  certs:
 
 networks:
   default:

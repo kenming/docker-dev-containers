@@ -16,6 +16,7 @@
 
 - Docker 和 Docker Compose
 - nginx-proxy 網絡（如果尚未創建，請參考下方說明）
+- **本地憑證生成工具** (如 `mkcert`)，用於 HTTPS 開發環境。
 
 ## 快速開始
 
@@ -49,6 +50,35 @@ docker-compose up -d
 ```bash
 docker-compose down
 ```
+
+## 🔒 HTTPS 與憑證設置（開發環境專用）
+
+要在本機環境下使用 HTTPS (例如 `https://images.kenming.idv.tw`)，您需要為 `nginx-proxy` 配置自簽署憑證並在作業系統中信任它。
+
+1.  **安裝與設置 `mkcert`：** 在您的 WSL 環境中安裝 `mkcert` (參見外部安裝指南)，並運行：
+    ```bash
+    mkcert -install
+    ```
+2.  **Host 檔案設定：** 檢查 Windows Host 檔案 (`C:\Windows\System32\drivers\etc\hosts`) 是否包含以下映射：
+    ```text
+    127.0.0.1 blog.localhost kenming.localhost phpmyadmin.localhost images.kenming.idv.tw
+    ```
+3.  **生成憑證：** 在 Nginx Proxy 的憑證目錄（您在 Host 上的實際掛載路徑，例如 `~/docker-vols/nginx/certs`）中，為所有需要 HTTPS 的域名生成憑證：
+    ```bash
+    cd ~/docker-vols/nginx/certs
+    mkcert kenming.localhost images.kenming.idv.tw
+
+    # 重新命名檔案以供 Nginx Proxy 識別
+    mv kenming.localhost.pem kenming.localhost.crt
+    mv kenming.localhost-key.pem kenming.localhost.key
+    mv images.kenming.idv.tw.pem images.kenming.idv.tw.crt
+    mv images.kenming.idv.tw-key.pem images.kenming.idv.tw.key
+    ```
+4.  **匯入 CA 憑證至 Windows：** 將 `mkcert -CAROOT` 找到的 `rootCA.pem` 檔案匯入 Windows 系統的\*\*「受信任的根憑證授權單位」\*\*清單中。
+5.  **重啟服務：** 執行 `docker-compose down` 後再 `docker-compose up -d` 讓 Nginx Proxy 讀取新憑證。
+
+-----
+
 
 ## 訪問網站和管理工具
 
@@ -104,11 +134,23 @@ docker-compose down
 | WP_KENMING_DIR | Kenming 檔案目錄 | ~/docker-vols/sites/kenming |
 | WP_KENMING_DEBUG | 是否啟用除錯模式 | 未設置 |
 
-## 目錄結構
+### 圖片伺服器設定 (新增)
 
-- `~/docker-vols/sites/blog/`: Blog WordPress 網站檔案
-- `~/docker-vols/sites/kenming/`: Kenming WordPress 網站檔案
-- `~/docker-vols/db_data/mysql/`: MySQL 資料庫檔案
+| 變數名稱 | 說明 | 預設值 |
+|----------|------|--------|
+| **IMAGE\_SERVER\_CONTAINER\_NAME** | 圖片伺服器容器名稱 | image\_kenming |
+| **IMAGE\_DIR** | **圖片伺服器的本機檔案目錄** | **\~/docker-vols/sites/image\_kenming** |
+
+-----
+
+## 目錄結構 (更新)
+
+  - `~/docker-vols/sites/blog/`: Blog WordPress 網站檔案
+  - `~/docker-vols/sites/kenming/`: Kenming WordPress 網站檔案
+  - **`~/docker-vols/sites/image_kenming/`:** **靜態圖片伺服器檔案**
+  - `~/docker-vols/db_data/mysql/`: MySQL 資料庫檔案
+
+-----
 
 ## 添加新的 WordPress 網站
 

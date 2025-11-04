@@ -67,6 +67,20 @@ services:
     expose:
       - 80
 
+  image_server:
+      image: nginx:alpine  # 使用最輕量的 Nginx 圖片
+      container_name: ${IMAGE_SERVER_CONTAINER_NAME:-image_kenming}
+      restart: always
+      environment:
+        # ⚠️ 關鍵：告訴 nginx-proxy 這個容器要響應哪個域名
+        - VIRTUAL_HOST=images.kenming.idv.tw
+        - VIRTUAL_PORT=80
+      volumes:
+        # ⚠️ 關鍵：將您的本機圖片資料夾掛載到容器的預設 Nginx 根目錄
+        - ${IMAGE_DIR:-~/docker-vols/sites/image_kenming}:/usr/share/nginx/html:ro
+      expose:
+        - 80
+
 networks:
   default:
     external: true
