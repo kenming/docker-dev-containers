@@ -4,9 +4,15 @@
 
 ## 目錄說明
 
+- [`nginx-proxy/`](nginx-proxy/README.md): Nginx 代理服務器
+  - 用於反向代理和虛擬主機配置
+  - 可用於連接其它 Docker 容器
+  - 添加 SSL 支援（自簽署憑證用於本地開發）
+  - [查看詳細說明](nginx-proxy/README.md)
+
 - [`wordpress/`](wordpress/README.md): WordPress 開發環境
-  - 包含 MySQL、WordPress 和 phpMyAdmin
-  - 支援多個 WordPress 站點（blog 和 kenming）
+  - 包含 MySQL、phpMyAdmin，以及**使用客製化 Dockerfile 編譯**的 WordPress。
+  - **[關鍵]** 此配置**已解決**在 HTTPS 下因 `wp_remote_post` 造成的 SSL 憑證或 DNS 錯誤。
   - [查看詳細說明](wordpress/README.md)
 
 - [`sqlserver/`](sqlserver/README.md): Microsoft SQL Server 環境
@@ -18,11 +24,6 @@
   - 包含 Dockerfile 和 VS Code DevContainer 配置
   - 適合 Node.js 應用程式開發
   - [查看詳細說明](node-dev/README.md)
-
-- [`nginx-proxy/`](nginx-proxy/README.md): Nginx 代理服務器
-  - 用於反向代理和虛擬主機配置
-  - 可用於連接其他 Docker 容器
-  - [查看詳細說明](nginx-proxy/README.md)
 
 - [`mongodb/`](mongodb/README.md): MongoDB 數據庫環境
   - 包含 MongoDB 和 Mongo Express 管理工具
@@ -93,6 +94,21 @@ git submodule update --remote
    ```bash
    docker-compose up -d
    ```
+
+  **[\!] `wordpress` 環境特別注意：**
+
+  `wordpress` 目錄包含一個客製化的 `Dockerfile` (位於 `./wp-base/`)，用於安裝本地 SSL 信任證書 mkcert Root CA)。
+
+  **首次啟動**或**更新 CA 證書**時，您必須先**強制重新編譯 (build)** 映像檔，以確保容器信任您的書：
+
+  ```bash
+  cd wordpress
+  # (請先查閱 wordpress/README.md 中的所有首次設定步驟)
+  docker compose build
+  docker compose up -d --force-recreate
+  ```
+
+  日常啟動則僅需 `docker compose up -d` 即可。   
 
 ## 共享網絡
 

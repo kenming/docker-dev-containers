@@ -17,7 +17,7 @@ services:
 
 volumes:  
   vhost:
-  html:
+  html:  
 
 networks:
   default:

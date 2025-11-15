@@ -18,7 +18,7 @@ services:
       - mysql_server
     restart: always
     environment:
-      - VIRTUAL_HOST=${PMA_VIRTUAL_HOST:-phpmyadmin.localhost}
+      - VIRTUAL_HOST=${PMA_VIRTUAL_HOST:-phpmyadmin.test}
       - PMA_HOST=mysql_server
       - PMA_PORT=3306
       - MYSQL_USERNAME=root
@@ -36,7 +36,7 @@ services:
     container_name: ${WP_BLOG_CONTAINER_NAME:-wordpress_blog}
     restart: always
     environment:
-      - VIRTUAL_HOST=${WP_BLOG_VIRTUAL_HOST:-blog.localhost}
+      - VIRTUAL_HOST=${WP_BLOG_VIRTUAL_HOST:-blog.test}
       - WORDPRESS_DB_NAME=${WP_BLOG_DB_NAME:-wp_blog}
       - WORDPRESS_DB_HOST=mysql_server:3306
       - WORDPRESS_DB_USER=${MYSQL_USER:-wpuser}
@@ -49,12 +49,15 @@ services:
     expose:
       - 80
 
-  wordprss_kenming:
-    image: wordpress:${WP_KENMING_VERSION:-php8.3}
+  wordprss_kenming:    
+    build:
+      context: ./wp-base
+      args:
+        WP_VERSION: ${WP_KENMING_VERSION:-php8.3}
     container_name: ${WP_KENMING_CONTAINER_NAME:-wordpress_kenming}
     restart: always
     environment:
-      - VIRTUAL_HOST=${WP_KENMING_VIRTUAL_HOST:-kenming.localhost}
+      - VIRTUAL_HOST=${WP_KENMING_VIRTUAL_HOST:-kenming.test}      
       - WORDPRESS_DB_NAME=${WP_KENMING_DB_NAME:-wp_kenming}
       - WORDPRESS_DB_HOST=mysql_server:3306
       - WORDPRESS_DB_USER=${MYSQL_USER:-wpuser}
@@ -62,10 +65,14 @@ services:
       - WORDPRESS_DEBUG=${WP_KENMING_DEBUG:-false}
     volumes:
       - ${WP_KENMING_DIR:-~/docker-vols/sites/kenming}:/var/www/html
+      - ~/docker-vols/php/kenming/custom-php.ini:/usr/local/etc/php/conf.d/custom-php.ini
+      # - ~/.local/share/mkcert/rootCA.pem:/usr/local/share/ca-certificates/mkcert-rootCA.crt:ro
     depends_on:
       - mysql_server
     expose:
       - 80
+    extra_hosts:
+      - "kenming.test:host-gateway"
 
   image_server:
       image: nginx:alpine  # 使用最輕量的 Nginx 圖片
