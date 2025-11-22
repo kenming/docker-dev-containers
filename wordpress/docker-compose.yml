@@ -74,6 +74,45 @@ services:
     extra_hosts:
       - "kenming.test:host-gateway"
 
+  wordpress_wpdev:  # 修正拼字 (wordprss -> wordpress)
+    build:
+      context: ./wp-base # 確認這裡面有您的 Dockerfile 和 mkcert-rootCA.pem
+      args:
+        # 修正：變數改為全大寫，對應 .env
+        WP_VERSION: ${WP_WPDEV_VERSION:-php8.3}
+    
+    # 修正：變數改為全大寫
+    container_name: ${WP_WPDEV_CONTAINER_NAME:-wordpress_wpdev}
+    restart: always
+    environment:
+      # 修正：變數改為全大寫
+      - VIRTUAL_HOST=${WP_WPDEV_VIRTUAL_HOST:-wpdev.test}      
+      # 修正：變數改為全大寫
+      - WORDPRESS_DB_NAME=${WP_WPDEV_DB_NAME:-wp_wpdev}
+      - WORDPRESS_DB_HOST=mysql_server:3306
+      - WORDPRESS_DB_USER=${MYSQL_USER:-wpuser}
+      - WORDPRESS_DB_PASSWORD=${MYSQL_PASSWORD}
+      
+      # Debug 設定
+      - WORDPRESS_DEBUG=${WP_WPDEV_DEBUG:-true}
+      # 修正：這裡應該引用 LOG 的專用變數
+      - WORDPRESS_DEBUG_LOG=${WP_WPDEV_DEBUG_LOG:-true}
+      
+    volumes:
+      # 網站根目錄
+      - ${WP_WPDEV_DIR:-~/docker-vols/sites/wpdev}:/var/www/html
+      # PHP 設定
+      - ~/docker-vols/php/wpdev/custom-php.ini:/usr/local/etc/php/conf.d/custom-php.ini
+      # 🔌 插件開發掛載 
+      - ~/projects/wpdev/plugins/aixpert-marklite:/var/www/html/wp-content/plugins/aixpert-marklite
+      
+    depends_on:
+      - mysql_server
+    expose:
+      - 80
+    extra_hosts:
+      - "wpdev.test:host-gateway"      
+
   image_server:
       image: nginx:alpine  # 使用最輕量的 Nginx 圖片
       container_name: ${IMAGE_SERVER_CONTAINER_NAME:-image_kenming}

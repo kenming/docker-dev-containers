@@ -84,7 +84,7 @@ docker-compose down
    (加入與 Windows 相同的內容)
 
    ```
-   127.0.0.1 blog.test kenming.test phpmyadmin.test images.kenming.idv.tw
+   127.0.0.1 wpdev.test blog.test kenming.test phpmyadmin.test images.kenming.idv.tw
    ```
 
 ### 步驟 3：生成 `mkcert` 憑證 (並正確命名)
@@ -99,7 +99,7 @@ docker-compose down
 
    ```bash
    cd ~/docker-vols/nginx/certs
-   mkcert kenming.test blog.test phpmyadmin.test images.kenming.idv.tw
+   mkcert wpdev.test kenming.test blog.test phpmyadmin.test images.kenming.idv.tw
    ```
 
 3.  **\[關鍵\] 複製並改名** `nginx-proxy` 依賴嚴格的檔案命名 (`domain.test.crt` / `domain.test.key`)。 (假設 `mkcert` 產生了 `kenming.test+3.pem` 和 `kenming.test+3-key.pem`)
@@ -160,6 +160,7 @@ wordprss_kenming:
 
 *   Blog 網站：`https://blog.test`
 *   Kenming 網站：`https://kenming.test`
+*   WPDEV 網站：`https://wpdev.test`
 *   圖片伺服器：`https://images.kenming.idv.tw`
 
 ### phpMyAdmin
@@ -213,6 +214,18 @@ wordprss_kenming:
 | WP_KENMING_DIR | Kenming 檔案目錄 | ~/docker-vols/sites/kenming |
 | WP_KENMING_DEBUG | 是否啟用除錯模式 | 未設置 |
 
+### 🟢 外掛開發站 (wpdev) 設定
+
+| 變數名稱 | 預設值 | 說明 |
+| --- | --- | --- |
+| WP_WPDEV_CONTAINER_NAME | wordpress\_wpdev | 容器名稱 |
+| WP_WPDEV_VERSION | **php8.3** | PHP 版本 (建議使用最新穩定版開發) |
+| WP_WPDEV_VIRTUAL_HOST | **wpdev.test** | 開發網址 |
+| WP_WPDEV_DB_NAME | wp\_wpdev | 獨立的開發用資料庫 |
+| WP_WPDEV_DIR | \~/docker-vols/sites/wpdev | 網站檔案儲存位置 |
+| WP_WPDEV_DEBUG | true | 強制開啟除錯模式 |
+| WP_WPDEV_DEBUG_LOG | true | 強制開啟除錯日誌 (`wp-content/debug.log`) |
+
 ### 圖片伺服器設定
 
 | 變數名稱 | 說明 | 預設值 |
@@ -224,6 +237,7 @@ wordprss_kenming:
 
 - `~/docker-vols/sites/blog/`: Blog WordPress 網站檔案
 - `~/docker-vols/sites/kenming/`: Kenming WordPress 網站檔案
+- `~/docker-vols/sites/wpdev/`: WordPress 網站開發 (Plugins)
 - **`~/docker-vols/sites/image_kenming/`:** **靜態圖片伺服器檔案**
 - `~/docker-vols/db_data/mysql/`: MySQL 資料庫檔案
 
